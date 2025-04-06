@@ -1,99 +1,40 @@
--- Table: productos
--- DROP TABLE IF EXISTS public.productos;
-CREATE TABLE IF NOT EXISTS productos
-(
-    id uuid NOT NULL,
-    codigo character varying(50) COLLATE pg_catalog."default" NOT NULL,
-    nombre character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    descripcion text COLLATE pg_catalog."default",
-    precio numeric(10,2) NOT NULL,
-    stock integer NOT NULL,
-    categoria character varying(50) COLLATE pg_catalog."default",
-    activo boolean DEFAULT true,
-    fecha_creacion timestamp without time zone NOT NULL,
-    fecha_actualizacion timestamp without time zone NOT NULL,
-    CONSTRAINT productos_pkey PRIMARY KEY (id),
-    CONSTRAINT productos_codigo_key UNIQUE (codigo)
-    )
 
-    TABLESPACE pg_default;
+-- Habilita la extensión para UUIDs
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-ALTER TABLE IF EXISTS productos
-    OWNER to postgres;
--- Index: idx_productos_categoria
+-- Tabla de productos (según tu modelo Producto.java)
+CREATE TABLE productos (
+    id UUID PRIMARY KEY,
+    codigo VARCHAR(255) NOT NULL,
+    nombre VARCHAR(255) NOT NULL,
+    descripcion TEXT,
+    precio NUMERIC(10, 2),
+    stock INTEGER,
+    categoria VARCHAR(255),
+    activo BOOLEAN DEFAULT true,
+    fecha_creacion TIMESTAMP,
+    fecha_actualizacion TIMESTAMP
+);
 
--- DROP INDEX IF EXISTS public.idx_productos_categoria;
+-- Datos de prueba para productos
+INSERT INTO productos (id, codigo, nombre, descripcion, precio, stock, categoria, activo, fecha_creacion, fecha_actualizacion) VALUES
+(gen_random_uuid(), 'P001', 'Producto 1', 'Descripción del producto 1', 10.99, 100, 'Categoria 1', true, now(), now()),
+(gen_random_uuid(), 'P002', 'Producto 2', 'Descripción del producto 2', 15.49, 50, 'Categoria 2', true, now(), now()),
+(gen_random_uuid(), 'P003', 'Producto 3', 'Descripción del producto 3', 20.00, 200, 'Categoria 3', true, now(), now());
 
-CREATE INDEX IF NOT EXISTS idx_productos_categoria
-    ON productos USING btree
-    (categoria COLLATE pg_catalog."default" ASC NULLS LAST)
-    TABLESPACE pg_default;
--- Index: idx_productos_codigo
+-- Tabla de clientes (según tu modelo Cliente.java)
+CREATE TABLE clientes (
+    id UUID PRIMARY KEY,
+    nombres VARCHAR(255) NOT NULL,
+    apellidos VARCHAR(255) NOT NULL,
+    dni VARCHAR(20) NOT NULL UNIQUE,
+    correo VARCHAR(255),
+    telefono VARCHAR(20)
+);
 
--- DROP INDEX IF EXISTS public.idx_productos_codigo;
+-- Datos de prueba para clientes
+INSERT INTO clientes (id, nombres, apellidos, dni, correo, telefono) VALUES
+(gen_random_uuid(), 'Juan', 'Pérez', '12345678', 'juan.perez@example.com', '987654321'),
+(gen_random_uuid(), 'María', 'López', '87654321', 'maria.lopez@example.com', '123456789'),
+(gen_random_uuid(), 'Carlos', 'Sánchez', '56781234', 'carlos.sanchez@example.com', '555666777');
 
-CREATE INDEX IF NOT EXISTS idx_productos_codigo
-    ON productos USING btree
-    (codigo COLLATE pg_catalog."default" ASC NULLS LAST)
-    TABLESPACE pg_default;
--- Index: idx_productos_nombre
-
--- DROP INDEX IF EXISTS public.idx_productos_nombre;
-
-CREATE INDEX IF NOT EXISTS idx_productos_nombre
-    ON productos USING btree
-    (nombre COLLATE pg_catalog."default" ASC NULLS LAST)
-    TABLESPACE pg_default;
-
-INSERT INTO productos(
-    codigo, nombre, descripcion, precio, stock, categoria, activo, fecha_creacion, fecha_actualizacion)
-VALUES ('PROD-001', 'Laptop Gamer', 'Laptop de alto rendimiento con GPU dedicada.', 4599.99, 10, 'Tecnologia', true, '2025-03-21 22:54:24.935957', '2025-03-21 22:54:24.935957');
-
-
--- Table: public.clientes
-
--- DROP TABLE IF EXISTS public.clientes;
-
-CREATE TABLE IF NOT EXISTS clientes
-(
-    id uuid NOT NULL,
-    nombres character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    apellidos character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    dni character varying(8) COLLATE pg_catalog."default" NOT NULL,
-    correo character varying(50) COLLATE pg_catalog."default" NOT NULL,
-    telefono character varying(10) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT clientes_pkey PRIMARY KEY (id)
-    )
-
-    TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS clientes
-    OWNER to postgres;
--- Index: idx_clientes_apellidos
-
--- DROP INDEX IF EXISTS public.idx_clientes_apellidos;
-
-CREATE INDEX IF NOT EXISTS idx_clientes_apellidos
-    ON clientes USING btree
-    (apellidos COLLATE pg_catalog."default" ASC NULLS LAST)
-    TABLESPACE pg_default;
--- Index: idx_clientes_dni
-
--- DROP INDEX IF EXISTS public.idx_clientes_dni;
-
-CREATE INDEX IF NOT EXISTS idx_clientes_dni
-    ON clientes USING btree
-    (dni COLLATE pg_catalog."default" ASC NULLS LAST)
-    TABLESPACE pg_default;
--- Index: idx_clientes_nombres
-
--- DROP INDEX IF EXISTS public.idx_clientes_nombres;
-
-CREATE INDEX IF NOT EXISTS idx_clientes_nombres
-    ON clientes USING btree
-    (nombres COLLATE pg_catalog."default" ASC NULLS LAST)
-    TABLESPACE pg_default;
-
-INSERT INTO public.clientes(
-    nombres, apellidos, dni, correo, telefono)
-VALUES ( 'Robinson', 'Santillan Fonseca', '42814546', 'robinson@example.com', '992541789');
